@@ -1,146 +1,201 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>あなたにぴったりの勉強法診断</title>
-  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --blue-main: #4A90E2;
-      --blue-light: #E3F2FD;
-      --blue-mid: #90CAF9;
-      --blue-dark: #1565C0;
-      --accent: #FF8C69;
-      --white: #FFFFFF;
-      --text: #2C3E50;
-      --text-light: #7F8C8D;
+      --primary: #4A90E2;
+      --primary-light: #7BB3EE;
+      --primary-dark: #2C6DB5;
+      --bg: #E3F2FD;
+      --bg-white: #F8FBFF;
+      --accent: #FF8C42;
+      --accent2: #6BCB77;
+      --text: #2D3A4A;
+      --text-light: #6B7C93;
       --shadow: 0 4px 20px rgba(74,144,226,0.15);
-      --radius: 18px;
+      --shadow-hover: 0 8px 32px rgba(74,144,226,0.25);
+      --radius: 20px;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: 'M PLUS Rounded 1c', sans-serif;
-      background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 50%, #E8F5E9 100%);
-      min-height: 100vh;
+      background: var(--bg);
       color: var(--text);
-      overflow-x: hidden;
+      min-height: 100vh;
     }
 
-    /* ========== BUBBLE BACKGROUND ========== */
-    .bubbles {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      pointer-events: none;
-      z-index: 0;
+    /* ===== HEADER ===== */
+    header {
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 50%, var(--primary-light) 100%);
+      padding: 40px 20px 60px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
     }
-    .bubble {
+
+    header::before {
+      content: '';
       position: absolute;
-      border-radius: 50%;
-      background: rgba(74,144,226,0.08);
-      animation: float linear infinite;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(ellipse at center, rgba(255,255,255,0.08) 0%, transparent 60%);
+      animation: pulse 4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(1.1); opacity: 1; }
+    }
+
+    .header-emoji {
+      font-size: 56px;
+      display: block;
+      margin-bottom: 12px;
+      animation: float 3s ease-in-out infinite;
     }
 
     @keyframes float {
-      0% { transform: translateY(110vh) scale(0.5); opacity: 0; }
-      10% { opacity: 1; }
-      90% { opacity: 1; }
-      100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
     }
 
-    /* ========== SCREENS ========== */
-    .screen {
-      display: none;
+    header h1 {
+      color: white;
+      font-size: clamp(22px, 5vw, 32px);
+      font-weight: 800;
+      line-height: 1.4;
       position: relative;
       z-index: 1;
-      min-height: 100vh;
-      padding: 20px 16px 40px;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.15);
     }
-    .screen.active { display: flex; flex-direction: column; align-items: center; justify-content: center; }
 
-    /* ========== TOP SCREEN ========== */
-    #screen-top {
+    header p {
+      color: rgba(255,255,255,0.9);
+      font-size: 15px;
+      margin-top: 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ===== WAVES ===== */
+    .wave-divider {
+      display: block;
+      background: var(--primary-light);
+      overflow: hidden;
+      height: 0;
+    }
+
+    /* ===== MAIN ===== */
+    main {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 30px 16px 60px;
+    }
+
+    /* ===== SCREENS ===== */
+    .screen { display: none; }
+    .screen.active { display: block; animation: fadeIn 0.4s ease; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== START SCREEN ===== */
+    .start-card {
+      background: white;
+      border-radius: var(--radius);
+      padding: 32px 28px;
+      box-shadow: var(--shadow);
       text-align: center;
     }
-    .top-icon {
-      font-size: 72px;
-      margin-bottom: 16px;
-      animation: bounce 2s ease-in-out infinite;
-    }
-    @keyframes bounce {
-      0%,100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
-    }
-    .top-title {
-      font-size: clamp(22px, 6vw, 32px);
-      font-weight: 800;
-      color: var(--blue-dark);
-      line-height: 1.3;
-      margin-bottom: 10px;
-    }
-    .top-subtitle {
-      font-size: clamp(13px, 3.5vw, 16px);
-      color: var(--text-light);
-      margin-bottom: 32px;
-      line-height: 1.6;
-    }
-    .top-badge {
-      display: inline-block;
-      background: var(--blue-light);
-      color: var(--blue-dark);
-      border-radius: 50px;
-      padding: 6px 16px;
-      font-size: 13px;
-      font-weight: 700;
-      margin-bottom: 32px;
-    }
-    .start-btn {
-      background: linear-gradient(135deg, var(--blue-main), var(--blue-dark));
-      color: white;
-      border: none;
-      border-radius: 50px;
-      padding: 18px 48px;
-      font-size: 18px;
-      font-weight: 800;
-      font-family: inherit;
-      cursor: pointer;
-      box-shadow: 0 6px 24px rgba(74,144,226,0.4);
-      transition: transform 0.15s, box-shadow 0.15s;
-      letter-spacing: 0.5px;
-    }
-    .start-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(74,144,226,0.5); }
-    .start-btn:active { transform: translateY(0); }
 
-    .type-preview {
+    .info-tags {
       display: flex;
-      flex-wrap: wrap;
       justify-content: center;
       gap: 10px;
-      margin-top: 36px;
-      max-width: 400px;
+      flex-wrap: wrap;
+      margin: 20px 0;
     }
-    .type-chip {
-      background: white;
+
+    .tag {
+      background: var(--bg);
+      color: var(--primary-dark);
+      padding: 6px 16px;
       border-radius: 50px;
-      padding: 8px 16px;
       font-size: 13px;
       font-weight: 700;
-      box-shadow: var(--shadow);
-      color: var(--blue-dark);
     }
 
-    /* ========== QUESTION SCREEN ========== */
-    #screen-quiz { padding-top: 40px; }
+    .start-desc {
+      color: var(--text-light);
+      font-size: 14px;
+      line-height: 1.8;
+      margin: 16px 0 28px;
+    }
 
-    .progress-wrap {
+    .privacy-note {
+      background: #FFF8E1;
+      border-left: 4px solid #FFB300;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 12px;
+      color: #795548;
+      text-align: left;
+      margin-bottom: 28px;
+      line-height: 1.6;
+    }
+
+    /* ===== BUTTONS ===== */
+    .btn-primary {
+      display: block;
       width: 100%;
-      max-width: 500px;
+      padding: 18px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(74,144,226,0.4);
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,0);
+      transition: background 0.2s;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 28px rgba(74,144,226,0.5);
+    }
+
+    .btn-primary:hover::after { background: rgba(255,255,255,0.08); }
+    .btn-primary:active { transform: translateY(0); }
+
+    /* ===== PROGRESS ===== */
+    .progress-wrap {
       margin-bottom: 24px;
     }
-    .progress-label {
+
+    .progress-info {
       display: flex;
       justify-content: space-between;
       font-size: 13px;
@@ -148,526 +203,778 @@
       margin-bottom: 8px;
       font-weight: 700;
     }
-    .progress-bar {
-      height: 10px;
-      background: rgba(74,144,226,0.15);
+
+    .progress-bar-bg {
+      background: white;
       border-radius: 50px;
+      height: 10px;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
       overflow: hidden;
     }
-    .progress-fill {
+
+    .progress-bar {
       height: 100%;
-      background: linear-gradient(90deg, var(--blue-main), var(--blue-dark));
+      background: linear-gradient(90deg, var(--primary-light), var(--primary));
       border-radius: 50px;
-      transition: width 0.4s cubic-bezier(0.4,0,0.2,1);
+      transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
-    .question-card {
+    /* ===== QUESTION CARD ===== */
+    .q-card {
       background: white;
       border-radius: var(--radius);
       padding: 28px 24px;
-      max-width: 500px;
-      width: 100%;
       box-shadow: var(--shadow);
-      animation: slideUp 0.3s ease;
-    }
-    @keyframes slideUp {
-      from { transform: translateY(20px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
     }
 
-    .q-num {
+    .q-type-badge {
+      display: inline-block;
+      background: var(--bg);
+      color: var(--primary-dark);
       font-size: 12px;
-      font-weight: 800;
-      color: var(--blue-main);
-      letter-spacing: 1px;
-      margin-bottom: 12px;
-      text-transform: uppercase;
-    }
-    .q-text {
-      font-size: clamp(16px, 4.5vw, 20px);
       font-weight: 700;
-      line-height: 1.5;
-      margin-bottom: 24px;
-      color: var(--text);
+      padding: 4px 12px;
+      border-radius: 50px;
+      margin-bottom: 16px;
+    }
+
+    .q-text {
+      font-size: 17px;
+      font-weight: 700;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
 
     .choice-btn {
-      display: block;
       width: 100%;
-      background: var(--blue-light);
-      border: 2.5px solid transparent;
+      padding: 16px 20px;
+      background: var(--bg-white);
+      border: 2.5px solid #DDE8F8;
       border-radius: 14px;
-      padding: 14px 16px;
+      font-family: 'M PLUS Rounded 1c', sans-serif;
       font-size: 15px;
-      font-weight: 700;
-      font-family: inherit;
-      color: var(--blue-dark);
+      font-weight: 500;
+      color: var(--text);
       cursor: pointer;
       text-align: left;
-      margin-bottom: 10px;
-      transition: all 0.2s;
-      line-height: 1.4;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
-    .choice-btn:last-child { margin-bottom: 0; }
+
     .choice-btn:hover {
-      background: white;
-      border-color: var(--blue-main);
+      border-color: var(--primary);
+      background: var(--bg);
       transform: translateX(4px);
     }
+
     .choice-btn.selected {
-      background: var(--blue-main);
-      color: white;
-      border-color: var(--blue-main);
+      border-color: var(--primary);
+      background: linear-gradient(135deg, #EBF4FF, #D6EAFF);
+      color: var(--primary-dark);
+      font-weight: 700;
     }
 
-    /* ========== RESULT SCREEN ========== */
-    #screen-result { text-align: center; padding-top: 40px; }
+    .choice-icon { font-size: 20px; flex-shrink: 0; }
 
+    /* ===== NAV BUTTONS ===== */
+    .nav-btns {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .btn-back {
+      flex: 1;
+      padding: 14px;
+      background: white;
+      border: 2.5px solid #DDE8F8;
+      border-radius: 50px;
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-light);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-back:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .btn-next {
+      flex: 2;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(74,144,226,0.35);
+      transition: all 0.2s ease;
+    }
+
+    .btn-next:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(74,144,226,0.45); }
+    .btn-next:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    /* ===== LOADING ===== */
+    .loading-screen {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .loading-circle {
+      width: 80px;
+      height: 80px;
+      border: 8px solid var(--bg);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+      margin: 0 auto 24px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading-text {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary-dark);
+    }
+
+    .loading-sub {
+      font-size: 13px;
+      color: var(--text-light);
+      margin-top: 8px;
+    }
+
+    /* ===== RESULT ===== */
     .result-card {
       background: white;
-      border-radius: 24px;
-      padding: 36px 24px;
-      max-width: 480px;
-      width: 100%;
-      box-shadow: 0 8px 40px rgba(74,144,226,0.2);
-      animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
     }
-    @keyframes popIn {
-      from { transform: scale(0.8); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
+
+    .result-header {
+      padding: 32px 24px;
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .result-header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='30' cy='30' r='20' fill='none' stroke='rgba(255,255,255,0.06)' stroke-width='2'/%3E%3C/svg%3E");
+    }
+
+    .result-type-emoji {
+      font-size: 72px;
+      display: block;
+      margin-bottom: 12px;
+      animation: float 3s ease-in-out infinite;
+      position: relative;
+      z-index: 1;
+    }
+
+    .result-type-name {
+      color: white;
+      font-size: 26px;
+      font-weight: 800;
+      position: relative;
+      z-index: 1;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
 
     .result-label {
+      color: rgba(255,255,255,0.8);
       font-size: 13px;
-      font-weight: 800;
-      color: var(--blue-main);
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      margin-bottom: 12px;
+      margin-top: 6px;
+      position: relative;
+      z-index: 1;
     }
-    .result-icon {
-      font-size: 80px;
-      margin-bottom: 12px;
-      display: block;
-      animation: bounce 2s ease-in-out infinite;
+
+    .result-body {
+      padding: 24px;
     }
-    .result-type {
-      font-size: clamp(24px, 6vw, 32px);
-      font-weight: 800;
-      color: var(--blue-dark);
-      margin-bottom: 16px;
-    }
+
     .result-desc {
       font-size: 15px;
-      line-height: 1.7;
+      line-height: 1.8;
       color: var(--text);
-      background: var(--blue-light);
+      background: var(--bg);
       border-radius: 14px;
-      padding: 16px;
+      padding: 18px;
       margin-bottom: 24px;
     }
 
-    /* Score bars */
-    .score-section { text-align: left; margin-bottom: 24px; }
-    .score-title {
-      font-size: 13px;
-      font-weight: 800;
+    /* ===== SCORE BARS ===== */
+    .scores-section h3 {
+      font-size: 15px;
+      font-weight: 700;
       color: var(--text-light);
-      margin-bottom: 12px;
-      text-align: center;
+      margin-bottom: 16px;
     }
-    .score-row { margin-bottom: 10px; }
-    .score-row-label {
+
+    .score-row {
       display: flex;
-      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .score-label {
       font-size: 13px;
       font-weight: 700;
-      margin-bottom: 4px;
-      color: var(--text);
+      width: 110px;
+      flex-shrink: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
-    .score-row-bar {
-      height: 10px;
-      background: var(--blue-light);
+
+    .score-bar-bg {
+      flex: 1;
+      background: var(--bg);
       border-radius: 50px;
+      height: 12px;
       overflow: hidden;
     }
-    .score-row-fill {
+
+    .score-bar-fill {
       height: 100%;
+      background: linear-gradient(90deg, var(--primary-light), var(--primary));
       border-radius: 50px;
-      background: linear-gradient(90deg, var(--blue-main), var(--blue-dark));
-      transition: width 1s cubic-bezier(0.4,0,0.2,1);
+      transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
-    .retry-btn {
-      background: white;
-      border: 2.5px solid var(--blue-main);
-      border-radius: 50px;
-      padding: 14px 36px;
-      font-size: 15px;
+    .score-bar-fill.top { background: linear-gradient(90deg, var(--primary), var(--primary-dark)); }
+
+    .score-num {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-light);
+      width: 30px;
+      text-align: right;
+    }
+
+    /* ===== TIPS ===== */
+    .tips-section {
+      margin-top: 24px;
+    }
+
+    .tips-section h3 {
+      font-size: 16px;
       font-weight: 800;
-      font-family: inherit;
-      color: var(--blue-main);
-      cursor: pointer;
-      transition: all 0.2s;
-      width: 100%;
-      max-width: 280px;
-    }
-    .retry-btn:hover { background: var(--blue-light); }
-
-    /* ========== SENDING OVERLAY ========== */
-    #overlay-sending {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(255,255,255,0.85);
-      z-index: 100;
+      margin-bottom: 14px;
+      display: flex;
       align-items: center;
-      justify-content: center;
+      gap: 8px;
+    }
+
+    .tip-item {
+      display: flex;
+      gap: 12px;
+      padding: 14px 16px;
+      background: var(--bg-white);
+      border: 2px solid #DDE8F8;
+      border-radius: 14px;
+      margin-bottom: 10px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .tip-icon { font-size: 20px; flex-shrink: 0; }
+
+    /* ===== SHARE & RETRY ===== */
+    .action-btns {
+      display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 12px;
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 2px dashed #DDE8F8;
+    }
+
+    .btn-retry {
+      display: block;
+      width: 100%;
+      padding: 16px;
+      background: white;
+      border: 2.5px solid var(--primary);
+      border-radius: 50px;
+      font-family: 'M PLUS Rounded 1c', sans-serif;
       font-size: 16px;
       font-weight: 700;
-      color: var(--blue-dark);
+      color: var(--primary);
+      cursor: pointer;
+      transition: all 0.2s;
     }
-    #overlay-sending.active { display: flex; }
-    .spinner {
-      width: 48px; height: 48px;
-      border: 5px solid var(--blue-light);
-      border-top-color: var(--blue-main);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ========== UTILITY ========== */
-    .notice {
-      font-size: 11px;
+    .btn-retry:hover { background: var(--bg); transform: translateY(-2px); }
+
+    .btn-share-x {
+      display: block;
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #1d9bf0, #0d78c1);
+      color: white;
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      text-align: center;
+    }
+
+    .btn-share-x:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(29,155,240,0.4); }
+
+    /* ===== STATUS ===== */
+    .save-status {
+      text-align: center;
+      font-size: 12px;
       color: var(--text-light);
       margin-top: 16px;
-      line-height: 1.6;
+      padding: 8px;
+      border-radius: 8px;
+    }
+
+    .save-status.saving { color: var(--primary); background: var(--bg); }
+    .save-status.saved { color: #4CAF50; background: #E8F5E9; }
+    .save-status.error { color: #F44336; background: #FFEBEE; }
+
+    /* ===== FOOTER ===== */
+    footer {
       text-align: center;
-      max-width: 400px;
+      padding: 30px 16px;
+      color: var(--text-light);
+      font-size: 12px;
+      line-height: 2;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 400px) {
+      .choice-btn { font-size: 14px; padding: 14px 16px; }
+      .q-text { font-size: 16px; }
     }
   </style>
 </head>
 <body>
 
-<!-- 背景バブル -->
-<div class="bubbles" id="bubbles"></div>
+<header>
+  <span class="header-emoji">📚</span>
+  <h1>あなたにぴったりの<br>勉強法診断</h1>
+  <p>あなたの性格や学習スタイルから、最適な勉強法を見つけます</p>
+</header>
 
-<!-- 送信中オーバーレイ -->
-<div id="overlay-sending">
-  <div class="spinner"></div>
-  <span>結果を記録中…</span>
-</div>
-
-<!-- ========== トップ画面 ========== -->
-<div class="screen active" id="screen-top">
-  <div class="top-icon">📚</div>
-  <div class="top-title">あなたにぴったりの<br>勉強法診断</div>
-  <div class="top-subtitle">あなたの性格や学習スタイルから<br>最適な勉強法を見つけます！</div>
-  <div class="top-badge">対象：中学生・高校生</div>
-  <button class="start-btn" onclick="startQuiz()">診断スタート ▶</button>
-  <div class="type-preview">
-    <div class="type-chip">👁️ 視覚型</div>
-    <div class="type-chip">🎧 聴覚型</div>
-    <div class="type-chip">📝 読み書き型</div>
-    <div class="type-chip">🏃 体験型</div>
-    <div class="type-chip">🧠 論理型</div>
-  </div>
-  <p class="notice">📊 診断結果は学習目的で匿名で記録されます。<br>個人を特定する情報は収集しません。</p>
-</div>
-
-<!-- ========== 問題画面 ========== -->
-<div class="screen" id="screen-quiz">
-  <div class="progress-wrap">
-    <div class="progress-label">
-      <span>進み具合</span>
-      <span id="prog-text">1 / 25</span>
+<main>
+  <!-- ===== スタート画面 ===== -->
+  <div class="screen active" id="screen-start">
+    <div class="start-card">
+      <div class="info-tags">
+        <span class="tag">🎓 中学生・高校生向け</span>
+        <span class="tag">⏱️ 約3分</span>
+        <span class="tag">📊 全10問</span>
+      </div>
+      <p class="start-desc">
+        あなたの勉強スタイルに合った方法を<br>
+        5つのタイプから診断します！<br><br>
+        正解・不正解はありません。<br>
+        直感で答えてみてください✨
+      </p>
+      <div class="privacy-note">
+        ⚠️ <strong>データ利用について：</strong>
+        診断結果・デバイス情報・おおよその地域情報（IPアドレスから推定）を
+        研究目的でGoogleスプレッドシートに記録します。
+        個人を特定する情報は収集しません。
+      </div>
+      <button class="btn-primary" onclick="startDiagnosis()">✨ 診断をはじめる</button>
     </div>
-    <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:4%"></div></div>
   </div>
-  <div class="question-card" id="question-card">
-    <div class="q-num" id="q-num">Q1</div>
-    <div class="q-text" id="q-text"></div>
-    <div id="choices"></div>
-  </div>
-</div>
 
-<!-- ========== 結果画面 ========== -->
-<div class="screen" id="screen-result">
-  <div class="result-card">
-    <div class="result-label">あなたのタイプは…</div>
-    <span class="result-icon" id="result-icon"></span>
-    <div class="result-type" id="result-type"></div>
-    <div class="result-desc" id="result-desc"></div>
-    <div class="score-section">
-      <div class="score-title">各タイプのスコア</div>
-      <div id="score-bars"></div>
+  <!-- ===== 問題画面 ===== -->
+  <div class="screen" id="screen-quiz">
+    <div class="progress-wrap">
+      <div class="progress-info">
+        <span>問題 <span id="current-q">1</span> / <span id="total-q">10</span></span>
+        <span id="progress-pct">0%</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar" id="progress-bar" style="width:0%"></div>
+      </div>
     </div>
-    <button class="retry-btn" onclick="retryQuiz()">🔄 もう一度やってみる</button>
+
+    <div class="q-card">
+      <span class="q-type-badge" id="q-type-badge">📖 学習スタイル</span>
+      <p class="q-text" id="q-text">質問がここに入ります</p>
+      <div class="choices" id="choices-wrap"></div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn-back" onclick="prevQuestion()" id="btn-back">← 戻る</button>
+      <button class="btn-next" onclick="nextQuestion()" id="btn-next" disabled>次へ →</button>
+    </div>
   </div>
-  <p class="notice">このサイトは学習スタイル研究のためのツールです。</p>
-</div>
+
+  <!-- ===== ローディング画面 ===== -->
+  <div class="screen" id="screen-loading">
+    <div class="loading-screen">
+      <div class="loading-circle"></div>
+      <p class="loading-text">🔍 診断中...</p>
+      <p class="loading-sub">あなたにぴったりの勉強法を探しています</p>
+    </div>
+  </div>
+
+  <!-- ===== 結果画面 ===== -->
+  <div class="screen" id="screen-result">
+    <div class="result-card">
+      <div class="result-header">
+        <span class="result-type-emoji" id="result-emoji">👁️</span>
+        <h2 class="result-type-name" id="result-name">診断結果</h2>
+        <p class="result-label">あなたの学習タイプ</p>
+      </div>
+      <div class="result-body">
+        <p class="result-desc" id="result-desc">説明文</p>
+
+        <div class="scores-section">
+          <h3>📊 各タイプのスコア</h3>
+          <div id="scores-wrap"></div>
+        </div>
+
+        <div class="tips-section">
+          <h3>💡 おすすめの勉強法</h3>
+          <div id="tips-wrap"></div>
+        </div>
+
+        <div class="action-btns">
+          <a href="#" class="btn-share-x" id="btn-share-x" target="_blank">𝕏 結果をシェアする</a>
+          <button class="btn-retry" onclick="retryDiagnosis()">🔄 もう一度診断する</button>
+        </div>
+
+        <p class="save-status" id="save-status"></p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <p>🔒 個人情報は収集しません</p>
+  <p>診断結果は参考情報です。自分に合った方法を探してみてください</p>
+</footer>
 
 <script>
-// ========== データ定義 ==========
+// ============================================================
+//  診断データ定義
+// ============================================================
 const TYPES = [
   {
     id: 'visual',
     name: '視覚型学習者',
     icon: '👁️',
-    desc: '図やグラフで理解するのが得意。カラフルなノートを作るのがおすすめ！色分けしたマインドマップや動画教材を活用しよう。',
+    desc: '図やグラフで理解するのが得意。カラフルなノートを作るのがおすすめ！頭の中でイメージを作ることで、より深く理解できるタイプです。',
+    tips: [
+      { icon: '🗺️', text: 'マインドマップを使って情報を整理しよう' },
+      { icon: '🎨', text: 'カラーペンで重要な箇所を色分けするのが効果的' },
+      { icon: '▶️', text: 'YouTube動画や図解を積極的に活用しよう' },
+    ]
   },
   {
     id: 'auditory',
     name: '聴覚型学習者',
     icon: '🎧',
-    desc: '聞いて理解するのが得意。音読や講義形式の勉強がおすすめ！友達と話しながら学んだり、録音して聞き返すのも効果的。',
-  },
-  {
-    id: 'rw',
-    name: '読み書き型学習者',
-    icon: '📝',
-    desc: 'ノートをまとめると定着する！自分の言葉でまとめる「アウトプット学習」が効果的。日記・ブログ感覚で勉強すると◎',
+    desc: '聞いて理解するのが得意。音読や講義形式がおすすめ！声に出すことで記憶が定着しやすいタイプです。',
+    tips: [
+      { icon: '📢', text: '声に出して読む「音読勉強法」が効果的' },
+      { icon: '👥', text: '友達に説明することで理解が深まる' },
+      { icon: '🎵', text: '軽いBGMをかけながら勉強すると集中しやすい' },
+    ]
   },
   {
     id: 'kinesthetic',
     name: '体験型学習者',
-    icon: '🏃',
-    desc: '実際にやってみると覚えられる！問題を解く・実験する・ロールプレイなど「体を使う学習」がベスト。',
+    icon: '✍️',
+    desc: '実際に書いたり体を動かしたりすることで理解が深まるタイプ。反復練習や実験が向いています！',
+    tips: [
+      { icon: '📝', text: '何度も書いて覚える「反復書き取り」が効果的' },
+      { icon: '🧪', text: '実験や体験型の学習に積極的に参加しよう' },
+      { icon: '⏱️', text: 'ポモドーロ法（25分集中+5分休憩）で集中力UP' },
+    ]
+  },
+  {
+    id: 'reading',
+    name: '読み書き型学習者',
+    icon: '📖',
+    desc: '文章を読んで整理することが得意。ノートにまとめることで理解が深まるタイプです。',
+    tips: [
+      { icon: '📓', text: '丁寧にノートを取り、自分の言葉でまとめ直そう' },
+      { icon: '📋', text: '箇条書きやリストで情報を整理するのが効果的' },
+      { icon: '✏️', text: '問題を自分で作って解く「自作問題法」がおすすめ' },
+    ]
   },
   {
     id: 'logical',
     name: '論理型学習者',
-    icon: '🧠',
-    desc: '理由がわかると理解が深まる！「なぜそうなるか」を追求する学習が向いている。構造化ノートや体系的な参考書が効果的。',
+    icon: '🧩',
+    desc: '理由や仕組みから理解するのが得意。「なぜ？」を追求することで力を発揮するタイプです。',
+    tips: [
+      { icon: '🔍', text: '「なぜそうなるのか」を徹底的に調べてみよう' },
+      { icon: '🗝️', text: '原理・原則から覚えることで応用力がつく' },
+      { icon: '🧠', text: '問題を解く前に「解法の流れ」を考える習慣をつけよう' },
+    ]
   }
 ];
 
-// 各タイプ5問 × 5タイプ = 25問
+// 各タイプに対応する質問（2問ずつ = 計10問）
 const QUESTIONS = [
-  // 視覚型
-  { type: 'visual', text: '教科書の図やイラストをよく見る' },
-  { type: 'visual', text: 'カラーペンを使ってノートを取るのが好き' },
-  { type: 'visual', text: 'マインドマップを作ると理解しやすい' },
-  { type: 'visual', text: 'YouTubeの解説動画を見て勉強することが多い' },
-  { type: 'visual', text: '文字だけよりも図があると頭に入りやすい' },
-  // 聴覚型
-  { type: 'auditory', text: '授業を聞くだけで理解できることが多い' },
-  { type: 'auditory', text: '音読すると内容が覚えやすい' },
-  { type: 'auditory', text: 'ポッドキャストや音声教材で学ぶのが好き' },
-  { type: 'auditory', text: '友達と話しながら勉強するのが好き' },
-  { type: 'auditory', text: '静かすぎる場所より少し音がある方が集中できる' },
-  // 読み書き型
-  { type: 'rw', text: 'ノートにまとめると記憶に残りやすい' },
-  { type: 'rw', text: '読書が好きで本から知識を得ることが多い' },
-  { type: 'rw', text: '学んだことを文章にして整理すると定着する' },
-  { type: 'rw', text: 'テスト前はノートを読み直すことが多い' },
-  { type: 'rw', text: '自分の考えを文字にして確認する癖がある' },
-  // 体験型
-  { type: 'kinesthetic', text: '実際に手を動かしてみると覚えられる' },
-  { type: 'kinesthetic', text: '実験や体験学習が一番楽しい' },
-  { type: 'kinesthetic', text: '問題をたくさん解くことで力がつくと思う' },
-  { type: 'kinesthetic', text: '座って聞いているだけだと眠くなる' },
-  { type: 'kinesthetic', text: '実生活に結びつけて考えると理解しやすい' },
-  // 論理型
-  { type: 'logical', text: '物事の「なぜ」を追求したいと思う' },
-  { type: 'logical', text: '情報を体系的に整理してから覚えたい' },
-  { type: 'logical', text: '公式や法則の仕組みを理解したい' },
-  { type: 'logical', text: '根拠や理由がわかると記憶に残りやすい' },
-  { type: 'logical', text: '勉強計画を立てて進めることが多い' },
+  // visual
+  { type: 0, text: '教科書の図やイラストに目が止まることが多い', icon: '👁️' },
+  { type: 0, text: 'カラーペンやマーカーを使ってノートを取るのが好き', icon: '🎨' },
+  // auditory
+  { type: 1, text: '授業を聞いているだけで内容がスッと入ってくることが多い', icon: '👂' },
+  { type: 1, text: '音読すると内容を覚えやすいと感じる', icon: '📢' },
+  // kinesthetic
+  { type: 2, text: '実際に手を動かしてやってみることで理解できることが多い', icon: '✍️' },
+  { type: 2, text: '体験したことや実験の内容はよく覚えている', icon: '🧪' },
+  // reading
+  { type: 3, text: '教科書や参考書を読んで自分でまとめるのが好き', icon: '📖' },
+  { type: 3, text: '文章を箇条書きやリストに整理するのが得意', icon: '📋' },
+  // logical
+  { type: 4, text: '「なぜそうなるのか」理由がわかると納得できる', icon: '🔍' },
+  { type: 4, text: '仕組みや原理から理解しようとする方だ', icon: '🧩' },
 ];
 
-// ランダムな順番にシャッフル
-function shuffleArray(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
+// 選択肢（全問共通）
+const CHOICES = [
+  { icon: '😊', label: 'とてもあてはまる', score: 3 },
+  { icon: '🙂', label: 'ややあてはまる',   score: 2 },
+  { icon: '😐', label: 'あまりあてはまらない', score: 1 },
+  { icon: '😶', label: 'あてはまらない',    score: 0 },
+];
 
-// ========== 状態管理 ==========
-let questions = [];
+// ============================================================
+//  状態管理
+// ============================================================
 let currentQ = 0;
-let scores = {};
+let answers  = new Array(QUESTIONS.length).fill(null);
+// GAS WebアプリのURL（セットアップ後に書き換えてください）
+const GAS_URL = 'YOUR_GAS_WEB_APP_URL_HERE';
 
-// ========== バブル生成 ==========
-(function createBubbles() {
-  const wrap = document.getElementById('bubbles');
-  for (let i = 0; i < 12; i++) {
-    const b = document.createElement('div');
-    b.className = 'bubble';
-    const size = 40 + Math.random() * 100;
-    b.style.cssText = `
-      width:${size}px; height:${size}px;
-      left:${Math.random()*100}%;
-      animation-duration:${8 + Math.random()*12}s;
-      animation-delay:${-Math.random()*15}s;
-    `;
-    wrap.appendChild(b);
-  }
-})();
-
-// ========== 画面切り替え ==========
+// ============================================================
+//  ナビゲーション
+// ============================================================
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  window.scrollTo(0, 0);
+  document.getElementById('screen-' + id).classList.add('active');
 }
 
-// ========== クイズ開始 ==========
-function startQuiz() {
-  questions = shuffleArray(QUESTIONS);
+function startDiagnosis() {
   currentQ = 0;
-  scores = {};
-  TYPES.forEach(t => scores[t.id] = 0);
-  showScreen('screen-quiz');
+  answers   = new Array(QUESTIONS.length).fill(null);
   renderQuestion();
+  showScreen('quiz');
 }
 
-// ========== 問題描画 ==========
+function retryDiagnosis() {
+  showScreen('start');
+}
+
+// ============================================================
+//  問題描画
+// ============================================================
 function renderQuestion() {
-  const q = questions[currentQ];
-  const total = questions.length;
+  const q   = QUESTIONS[currentQ];
+  const tot = QUESTIONS.length;
 
-  document.getElementById('prog-text').textContent = `${currentQ + 1} / ${total}`;
-  document.getElementById('prog-fill').style.width = `${((currentQ) / total) * 100}%`;
-  document.getElementById('q-num').textContent = `Q${currentQ + 1}`;
-  document.getElementById('q-text').textContent = `「${q.text}」\n当てはまる？`;
+  // ヘッダー情報
+  document.getElementById('current-q').textContent   = currentQ + 1;
+  document.getElementById('total-q').textContent     = tot;
+  document.getElementById('progress-pct').textContent = Math.round((currentQ / tot) * 100) + '%';
+  document.getElementById('progress-bar').style.width = (currentQ / tot * 100) + '%';
+  document.getElementById('q-type-badge').textContent = q.icon + ' ' + TYPES[q.type].name;
+  document.getElementById('q-text').textContent       = q.text;
 
-  const choices = document.getElementById('choices');
-  choices.innerHTML = '';
-
-  const opts = [
-    { label: '✅ よく当てはまる', value: 2 },
-    { label: '🙂 少し当てはまる', value: 1 },
-    { label: '😐 あまり当てはまらない', value: 0 },
-  ];
-  opts.forEach(opt => {
+  // 選択肢
+  const wrap = document.getElementById('choices-wrap');
+  wrap.innerHTML = '';
+  CHOICES.forEach((c, i) => {
     const btn = document.createElement('button');
-    btn.className = 'choice-btn';
-    btn.textContent = opt.label;
-    btn.onclick = () => selectChoice(opt.value, btn);
-    choices.appendChild(btn);
+    btn.className = 'choice-btn' + (answers[currentQ] === i ? ' selected' : '');
+    btn.innerHTML = `<span class="choice-icon">${c.icon}</span>${c.label}`;
+    btn.onclick = () => selectChoice(i);
+    wrap.appendChild(btn);
   });
 
-  // カードアニメーションリセット
-  const card = document.getElementById('question-card');
-  card.style.animation = 'none';
-  card.offsetHeight; // reflow
-  card.style.animation = 'slideUp 0.3s ease';
+  // ボタン
+  document.getElementById('btn-back').style.visibility = currentQ === 0 ? 'hidden' : 'visible';
+  document.getElementById('btn-next').disabled         = answers[currentQ] === null;
+  document.getElementById('btn-next').textContent      = currentQ === tot - 1 ? '結果を見る 🎉' : '次へ →';
 }
 
-// ========== 選択処理 ==========
-function selectChoice(value, btn) {
-  // 選択ビジュアル
-  document.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
+function selectChoice(idx) {
+  answers[currentQ] = idx;
+  document.querySelectorAll('.choice-btn').forEach((b, i) => {
+    b.classList.toggle('selected', i === idx);
+  });
+  document.getElementById('btn-next').disabled = false;
+}
 
-  // スコア加算
-  const q = questions[currentQ];
-  scores[q.type] += value;
-
-  // 少し待ってから次へ
-  setTimeout(() => {
+function nextQuestion() {
+  if (answers[currentQ] === null) return;
+  if (currentQ < QUESTIONS.length - 1) {
     currentQ++;
-    if (currentQ < questions.length) {
-      renderQuestion();
-    } else {
-      showResult();
-    }
-  }, 350);
+    renderQuestion();
+  } else {
+    showResults();
+  }
 }
 
-// ========== 結果表示 ==========
-function showResult() {
-  // 最高スコアのタイプを決定
-  let maxScore = -1, winType = null;
-  TYPES.forEach(t => {
-    if (scores[t.id] > maxScore) { maxScore = scores[t.id]; winType = t; }
-  });
+function prevQuestion() {
+  if (currentQ > 0) { currentQ--; renderQuestion(); }
+}
 
-  document.getElementById('result-icon').textContent = winType.icon;
-  document.getElementById('result-type').textContent = winType.name;
-  document.getElementById('result-desc').textContent = winType.desc;
+// ============================================================
+//  結果計算
+// ============================================================
+function showResults() {
+  showScreen('loading');
 
-  // スコアバー生成
-  const maxPossible = 10; // 5問 × 2点
-  const barsWrap = document.getElementById('score-bars');
-  barsWrap.innerHTML = '';
-  TYPES.forEach(t => {
-    const pct = Math.round((scores[t.id] / maxPossible) * 100);
-    barsWrap.innerHTML += `
-      <div class="score-row">
-        <div class="score-row-label">
-          <span>${t.icon} ${t.name}</span>
-          <span>${scores[t.id]}点</span>
-        </div>
-        <div class="score-row-bar">
-          <div class="score-row-fill" style="width:0%" data-target="${pct}"></div>
-        </div>
-      </div>
-    `;
-  });
-
-  showScreen('screen-result');
-
-  // バーアニメーション
   setTimeout(() => {
-    document.querySelectorAll('.score-row-fill').forEach(el => {
-      el.style.width = el.dataset.target + '%';
+    // スコア集計
+    const scores = new Array(TYPES.length).fill(0);
+    answers.forEach((ans, qi) => {
+      if (ans !== null) {
+        scores[QUESTIONS[qi].type] += CHOICES[ans].score;
+      }
     });
-  }, 200);
 
-  // データ送信
-  sendToSpreadsheet(winType, scores);
+    // 最高スコアのタイプを選出
+    const maxIdx = scores.indexOf(Math.max(...scores));
+    const winner = TYPES[maxIdx];
+    const maxScore = Math.max(...scores);
+
+    // 結果表示
+    document.getElementById('result-emoji').textContent = winner.icon;
+    document.getElementById('result-name').textContent  = winner.name;
+    document.getElementById('result-desc').textContent  = winner.desc;
+
+    // スコアバー
+    const scoresWrap = document.getElementById('scores-wrap');
+    scoresWrap.innerHTML = '';
+    TYPES.forEach((t, i) => {
+      const pct = maxScore > 0 ? Math.round((scores[i] / maxScore) * 100) : 0;
+      scoresWrap.innerHTML += `
+        <div class="score-row">
+          <span class="score-label">${t.icon} ${t.name}</span>
+          <div class="score-bar-bg">
+            <div class="score-bar-fill ${i === maxIdx ? 'top' : ''}" style="width:0%" data-pct="${pct}"></div>
+          </div>
+          <span class="score-num">${scores[i]}pt</span>
+        </div>`;
+    });
+
+    // tips
+    const tipsWrap = document.getElementById('tips-wrap');
+    tipsWrap.innerHTML = winner.tips.map(t =>
+      `<div class="tip-item"><span class="tip-icon">${t.icon}</span><span>${t.text}</span></div>`
+    ).join('');
+
+    // シェアボタン
+    const shareText = encodeURIComponent(`📚 勉強法診断の結果\n私のタイプは「${winner.name} ${winner.icon}」でした！\nあなたも試してみて✨`);
+    document.getElementById('btn-share-x').href = `https://twitter.com/intent/tweet?text=${shareText}`;
+
+    showScreen('result');
+
+    // アニメーション遅延でスコアバー表示
+    setTimeout(() => {
+      document.querySelectorAll('.score-bar-fill').forEach(el => {
+        el.style.width = el.dataset.pct + '%';
+      });
+    }, 100);
+
+    // スプレッドシートに記録
+    saveToSpreadsheet(winner, scores);
+  }, 1800);
 }
 
-// ========== やり直し ==========
-function retryQuiz() {
-  showScreen('screen-top');
-}
+// ============================================================
+//  Googleスプレッドシートへ保存
+// ============================================================
+async function saveToSpreadsheet(winner, scores) {
+  const statusEl = document.getElementById('save-status');
 
-// ========== Googleスプレッドシートへ送信 ==========
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbzXkCdzyCytu78uOk-VCKuHaxmZn2m6AErDF7r_b5EJy8zBwz_di-eRa54VfPfJw_s2/exec'; // ← ここにGoogle Apps ScriptのURLを貼り付ける
+  // GAS URLが未設定の場合はスキップ
+  if (!GAS_URL || GAS_URL === 'YOUR_GAS_WEB_APP_URL_HERE') {
+    statusEl.textContent = '⚙️ スプレッドシート連携は未設定です（setup-guide.md を参照）';
+    statusEl.className = 'save-status';
+    return;
+  }
 
-async function sendToSpreadsheet(winType, scores) {
-  if (!GAS_URL) return; // URLが空の場合のみスキップ // 未設定時はスキップ
+  statusEl.textContent = '📡 結果を記録中...';
+  statusEl.className = 'save-status saving';
 
-  document.getElementById('overlay-sending').classList.add('active');
+  // デバイス情報収集
+  const ua = navigator.userAgent;
+  const deviceType = /Mobi|Android/i.test(ua) ? 'スマートフォン' : 'PC・タブレット';
+  const browserName = (() => {
+    if (/Edg/i.test(ua))    return 'Edge';
+    if (/Chrome/i.test(ua)) return 'Chrome';
+    if (/Firefox/i.test(ua)) return 'Firefox';
+    if (/Safari/i.test(ua)) return 'Safari';
+    return 'その他';
+  })();
+  const osName = (() => {
+    if (/Windows/i.test(ua)) return 'Windows';
+    if (/Mac/i.test(ua))     return 'Mac';
+    if (/Android/i.test(ua)) return 'Android';
+    if (/iPhone|iPad/i.test(ua)) return 'iOS';
+    return 'その他';
+  })();
 
+  // 送信するデータ
   const payload = {
-    result: winType.name,
-    scores: {
-      visual: scores.visual,
-      auditory: scores.auditory,
-      rw: scores.rw,
-      kinesthetic: scores.kinesthetic,
-      logical: scores.logical,
-    },
-    location: {
-      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || '不明',
-      // 国・都道府県・市区町村はGAS側でIPから取得
-    },
-    userAgent: navigator.userAgent,
-    language: navigator.language,
-    timestamp: new Date().toISOString(),
+    datetime:   new Date().toLocaleString('ja-JP'),
+    resultType: winner.name,
+    resultIcon: winner.icon,
+    scores:     TYPES.map((t, i) => `${t.name}:${scores[i]}`).join(', '),
+    deviceType,
+    browser:    browserName,
+    os:         osName,
+    language:   navigator.language,
   };
 
   try {
-    await fetch(GAS_URL, {
+    const res = await fetch(GAS_URL, {
       method: 'POST',
-      mode: 'no-cors',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
+      body:    JSON.stringify(payload),
     });
+
+    if (res.ok) {
+      statusEl.textContent = '✅ 結果が記録されました！ありがとうございます';
+      statusEl.className = 'save-status saved';
+    } else {
+      throw new Error('送信失敗');
+    }
   } catch (e) {
-    console.warn('送信エラー:', e);
-  } finally {
-    document.getElementById('overlay-sending').classList.remove('active');
+    statusEl.textContent = '⚠️ 記録に失敗しました（ネットワークを確認してください）';
+    statusEl.className = 'save-status error';
+    console.error('GAS送信エラー:', e);
   }
 }
 </script>
