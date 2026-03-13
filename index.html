@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>あなたにぴったりの勉強法診断</title>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --blue-main: #4A90E2;
+      --blue-light: #E3F2FD;
+      --blue-mid: #90CAF9;
+      --blue-dark: #1565C0;
+      --accent: #FF8C69;
+      --white: #FFFFFF;
+      --text: #2C3E50;
+      --text-light: #7F8C8D;
+      --shadow: 0 4px 20px rgba(74,144,226,0.15);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+      background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 50%, #E8F5E9 100%);
+      min-height: 100vh;
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* ========== BUBBLE BACKGROUND ========== */
+    .bubbles {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .bubble {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(74,144,226,0.08);
+      animation: float linear infinite;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(110vh) scale(0.5); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+    }
+
+    /* ========== SCREENS ========== */
+    .screen {
+      display: none;
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      padding: 20px 16px 40px;
+    }
+    .screen.active { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+
+    /* ========== TOP SCREEN ========== */
+    #screen-top {
+      text-align: center;
+    }
+    .top-icon {
+      font-size: 72px;
+      margin-bottom: 16px;
+      animation: bounce 2s ease-in-out infinite;
+    }
+    @keyframes bounce {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    .top-title {
+      font-size: clamp(22px, 6vw, 32px);
+      font-weight: 800;
+      color: var(--blue-dark);
+      line-height: 1.3;
+      margin-bottom: 10px;
+    }
+    .top-subtitle {
+      font-size: clamp(13px, 3.5vw, 16px);
+      color: var(--text-light);
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+    .top-badge {
+      display: inline-block;
+      background: var(--blue-light);
+      color: var(--blue-dark);
+      border-radius: 50px;
+      padding: 6px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 32px;
+    }
+    .start-btn {
+      background: linear-gradient(135deg, var(--blue-main), var(--blue-dark));
+      color: white;
+      border: none;
+      border-radius: 50px;
+      padding: 18px 48px;
+      font-size: 18px;
+      font-weight: 800;
+      font-family: inherit;
+      cursor: pointer;
+      box-shadow: 0 6px 24px rgba(74,144,226,0.4);
+      transition: transform 0.15s, box-shadow 0.15s;
+      letter-spacing: 0.5px;
+    }
+    .start-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(74,144,226,0.5); }
+    .start-btn:active { transform: translateY(0); }
+
+    .type-preview {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 36px;
+      max-width: 400px;
+    }
+    .type-chip {
+      background: white;
+      border-radius: 50px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      box-shadow: var(--shadow);
+      color: var(--blue-dark);
+    }
+
+    /* ========== QUESTION SCREEN ========== */
+    #screen-quiz { padding-top: 40px; }
+
+    .progress-wrap {
+      width: 100%;
+      max-width: 500px;
+      margin-bottom: 24px;
+    }
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--text-light);
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+    .progress-bar {
+      height: 10px;
+      background: rgba(74,144,226,0.15);
+      border-radius: 50px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--blue-main), var(--blue-dark));
+      border-radius: 50px;
+      transition: width 0.4s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .question-card {
+      background: white;
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: var(--shadow);
+      animation: slideUp 0.3s ease;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .q-num {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--blue-main);
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+    }
+    .q-text {
+      font-size: clamp(16px, 4.5vw, 20px);
+      font-weight: 700;
+      line-height: 1.5;
+      margin-bottom: 24px;
+      color: var(--text);
+    }
+
+    .choice-btn {
+      display: block;
+      width: 100%;
+      background: var(--blue-light);
+      border: 2.5px solid transparent;
+      border-radius: 14px;
+      padding: 14px 16px;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: inherit;
+      color: var(--blue-dark);
+      cursor: pointer;
+      text-align: left;
+      margin-bottom: 10px;
+      transition: all 0.2s;
+      line-height: 1.4;
+    }
+    .choice-btn:last-child { margin-bottom: 0; }
+    .choice-btn:hover {
+      background: white;
+      border-color: var(--blue-main);
+      transform: translateX(4px);
+    }
+    .choice-btn.selected {
+      background: var(--blue-main);
+      color: white;
+      border-color: var(--blue-main);
+    }
+
+    /* ========== RESULT SCREEN ========== */
+    #screen-result { text-align: center; padding-top: 40px; }
+
+    .result-card {
+      background: white;
+      border-radius: 24px;
+      padding: 36px 24px;
+      max-width: 480px;
+      width: 100%;
+      box-shadow: 0 8px 40px rgba(74,144,226,0.2);
+      animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    @keyframes popIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .result-label {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--blue-main);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .result-icon {
+      font-size: 80px;
+      margin-bottom: 12px;
+      display: block;
+      animation: bounce 2s ease-in-out infinite;
+    }
+    .result-type {
+      font-size: clamp(24px, 6vw, 32px);
+      font-weight: 800;
+      color: var(--blue-dark);
+      margin-bottom: 16px;
+    }
+    .result-desc {
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--text);
+      background: var(--blue-light);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 24px;
+    }
+
+    /* Score bars */
+    .score-section { text-align: left; margin-bottom: 24px; }
+    .score-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text-light);
+      margin-bottom: 12px;
+      text-align: center;
+    }
+    .score-row { margin-bottom: 10px; }
+    .score-row-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: var(--text);
+    }
+    .score-row-bar {
+      height: 10px;
+      background: var(--blue-light);
+      border-radius: 50px;
+      overflow: hidden;
+    }
+    .score-row-fill {
+      height: 100%;
+      border-radius: 50px;
+      background: linear-gradient(90deg, var(--blue-main), var(--blue-dark));
+      transition: width 1s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .retry-btn {
+      background: white;
+      border: 2.5px solid var(--blue-main);
+      border-radius: 50px;
+      padding: 14px 36px;
+      font-size: 15px;
+      font-weight: 800;
+      font-family: inherit;
+      color: var(--blue-main);
+      cursor: pointer;
+      transition: all 0.2s;
+      width: 100%;
+      max-width: 280px;
+    }
+    .retry-btn:hover { background: var(--blue-light); }
+
+    /* ========== SENDING OVERLAY ========== */
+    #overlay-sending {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(255,255,255,0.85);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--blue-dark);
+    }
+    #overlay-sending.active { display: flex; }
+    .spinner {
+      width: 48px; height: 48px;
+      border: 5px solid var(--blue-light);
+      border-top-color: var(--blue-main);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ========== UTILITY ========== */
+    .notice {
+      font-size: 11px;
+      color: var(--text-light);
+      margin-top: 16px;
+      line-height: 1.6;
+      text-align: center;
+      max-width: 400px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- 背景バブル -->
+<div class="bubbles" id="bubbles"></div>
+
+<!-- 送信中オーバーレイ -->
+<div id="overlay-sending">
+  <div class="spinner"></div>
+  <span>結果を記録中…</span>
+</div>
+
+<!-- ========== トップ画面 ========== -->
+<div class="screen active" id="screen-top">
+  <div class="top-icon">📚</div>
+  <div class="top-title">あなたにぴったりの<br>勉強法診断</div>
+  <div class="top-subtitle">あなたの性格や学習スタイルから<br>最適な勉強法を見つけます！</div>
+  <div class="top-badge">対象：中学生・高校生</div>
+  <button class="start-btn" onclick="startQuiz()">診断スタート ▶</button>
+  <div class="type-preview">
+    <div class="type-chip">👁️ 視覚型</div>
+    <div class="type-chip">🎧 聴覚型</div>
+    <div class="type-chip">📝 読み書き型</div>
+    <div class="type-chip">🏃 体験型</div>
+    <div class="type-chip">🧠 論理型</div>
+  </div>
+  <p class="notice">📊 診断結果は学習目的で匿名で記録されます。<br>個人を特定する情報は収集しません。</p>
+</div>
+
+<!-- ========== 問題画面 ========== -->
+<div class="screen" id="screen-quiz">
+  <div class="progress-wrap">
+    <div class="progress-label">
+      <span>進み具合</span>
+      <span id="prog-text">1 / 25</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:4%"></div></div>
+  </div>
+  <div class="question-card" id="question-card">
+    <div class="q-num" id="q-num">Q1</div>
+    <div class="q-text" id="q-text"></div>
+    <div id="choices"></div>
+  </div>
+</div>
+
+<!-- ========== 結果画面 ========== -->
+<div class="screen" id="screen-result">
+  <div class="result-card">
+    <div class="result-label">あなたのタイプは…</div>
+    <span class="result-icon" id="result-icon"></span>
+    <div class="result-type" id="result-type"></div>
+    <div class="result-desc" id="result-desc"></div>
+    <div class="score-section">
+      <div class="score-title">各タイプのスコア</div>
+      <div id="score-bars"></div>
+    </div>
+    <button class="retry-btn" onclick="retryQuiz()">🔄 もう一度やってみる</button>
+  </div>
+  <p class="notice">このサイトは学習スタイル研究のためのツールです。</p>
+</div>
+
+<script>
+// ========== データ定義 ==========
+const TYPES = [
+  {
+    id: 'visual',
+    name: '視覚型学習者',
+    icon: '👁️',
+    desc: '図やグラフで理解するのが得意。カラフルなノートを作るのがおすすめ！色分けしたマインドマップや動画教材を活用しよう。',
+  },
+  {
+    id: 'auditory',
+    name: '聴覚型学習者',
+    icon: '🎧',
+    desc: '聞いて理解するのが得意。音読や講義形式の勉強がおすすめ！友達と話しながら学んだり、録音して聞き返すのも効果的。',
+  },
+  {
+    id: 'rw',
+    name: '読み書き型学習者',
+    icon: '📝',
+    desc: 'ノートをまとめると定着する！自分の言葉でまとめる「アウトプット学習」が効果的。日記・ブログ感覚で勉強すると◎',
+  },
+  {
+    id: 'kinesthetic',
+    name: '体験型学習者',
+    icon: '🏃',
+    desc: '実際にやってみると覚えられる！問題を解く・実験する・ロールプレイなど「体を使う学習」がベスト。',
+  },
+  {
+    id: 'logical',
+    name: '論理型学習者',
+    icon: '🧠',
+    desc: '理由がわかると理解が深まる！「なぜそうなるか」を追求する学習が向いている。構造化ノートや体系的な参考書が効果的。',
+  }
+];
+
+// 各タイプ5問 × 5タイプ = 25問
+const QUESTIONS = [
+  // 視覚型
+  { type: 'visual', text: '教科書の図やイラストをよく見る' },
+  { type: 'visual', text: 'カラーペンを使ってノートを取るのが好き' },
+  { type: 'visual', text: 'マインドマップを作ると理解しやすい' },
+  { type: 'visual', text: 'YouTubeの解説動画を見て勉強することが多い' },
+  { type: 'visual', text: '文字だけよりも図があると頭に入りやすい' },
+  // 聴覚型
+  { type: 'auditory', text: '授業を聞くだけで理解できることが多い' },
+  { type: 'auditory', text: '音読すると内容が覚えやすい' },
+  { type: 'auditory', text: 'ポッドキャストや音声教材で学ぶのが好き' },
+  { type: 'auditory', text: '友達と話しながら勉強するのが好き' },
+  { type: 'auditory', text: '静かすぎる場所より少し音がある方が集中できる' },
+  // 読み書き型
+  { type: 'rw', text: 'ノートにまとめると記憶に残りやすい' },
+  { type: 'rw', text: '読書が好きで本から知識を得ることが多い' },
+  { type: 'rw', text: '学んだことを文章にして整理すると定着する' },
+  { type: 'rw', text: 'テスト前はノートを読み直すことが多い' },
+  { type: 'rw', text: '自分の考えを文字にして確認する癖がある' },
+  // 体験型
+  { type: 'kinesthetic', text: '実際に手を動かしてみると覚えられる' },
+  { type: 'kinesthetic', text: '実験や体験学習が一番楽しい' },
+  { type: 'kinesthetic', text: '問題をたくさん解くことで力がつくと思う' },
+  { type: 'kinesthetic', text: '座って聞いているだけだと眠くなる' },
+  { type: 'kinesthetic', text: '実生活に結びつけて考えると理解しやすい' },
+  // 論理型
+  { type: 'logical', text: '物事の「なぜ」を追求したいと思う' },
+  { type: 'logical', text: '情報を体系的に整理してから覚えたい' },
+  { type: 'logical', text: '公式や法則の仕組みを理解したい' },
+  { type: 'logical', text: '根拠や理由がわかると記憶に残りやすい' },
+  { type: 'logical', text: '勉強計画を立てて進めることが多い' },
+];
+
+// ランダムな順番にシャッフル
+function shuffleArray(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// ========== 状態管理 ==========
+let questions = [];
+let currentQ = 0;
+let scores = {};
+
+// ========== バブル生成 ==========
+(function createBubbles() {
+  const wrap = document.getElementById('bubbles');
+  for (let i = 0; i < 12; i++) {
+    const b = document.createElement('div');
+    b.className = 'bubble';
+    const size = 40 + Math.random() * 100;
+    b.style.cssText = `
+      width:${size}px; height:${size}px;
+      left:${Math.random()*100}%;
+      animation-duration:${8 + Math.random()*12}s;
+      animation-delay:${-Math.random()*15}s;
+    `;
+    wrap.appendChild(b);
+  }
+})();
+
+// ========== 画面切り替え ==========
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ========== クイズ開始 ==========
+function startQuiz() {
+  questions = shuffleArray(QUESTIONS);
+  currentQ = 0;
+  scores = {};
+  TYPES.forEach(t => scores[t.id] = 0);
+  showScreen('screen-quiz');
+  renderQuestion();
+}
+
+// ========== 問題描画 ==========
+function renderQuestion() {
+  const q = questions[currentQ];
+  const total = questions.length;
+
+  document.getElementById('prog-text').textContent = `${currentQ + 1} / ${total}`;
+  document.getElementById('prog-fill').style.width = `${((currentQ) / total) * 100}%`;
+  document.getElementById('q-num').textContent = `Q${currentQ + 1}`;
+  document.getElementById('q-text').textContent = `「${q.text}」\n当てはまる？`;
+
+  const choices = document.getElementById('choices');
+  choices.innerHTML = '';
+
+  const opts = [
+    { label: '✅ よく当てはまる', value: 2 },
+    { label: '🙂 少し当てはまる', value: 1 },
+    { label: '😐 あまり当てはまらない', value: 0 },
+  ];
+  opts.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.textContent = opt.label;
+    btn.onclick = () => selectChoice(opt.value, btn);
+    choices.appendChild(btn);
+  });
+
+  // カードアニメーションリセット
+  const card = document.getElementById('question-card');
+  card.style.animation = 'none';
+  card.offsetHeight; // reflow
+  card.style.animation = 'slideUp 0.3s ease';
+}
+
+// ========== 選択処理 ==========
+function selectChoice(value, btn) {
+  // 選択ビジュアル
+  document.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+
+  // スコア加算
+  const q = questions[currentQ];
+  scores[q.type] += value;
+
+  // 少し待ってから次へ
+  setTimeout(() => {
+    currentQ++;
+    if (currentQ < questions.length) {
+      renderQuestion();
+    } else {
+      showResult();
+    }
+  }, 350);
+}
+
+// ========== 結果表示 ==========
+function showResult() {
+  // 最高スコアのタイプを決定
+  let maxScore = -1, winType = null;
+  TYPES.forEach(t => {
+    if (scores[t.id] > maxScore) { maxScore = scores[t.id]; winType = t; }
+  });
+
+  document.getElementById('result-icon').textContent = winType.icon;
+  document.getElementById('result-type').textContent = winType.name;
+  document.getElementById('result-desc').textContent = winType.desc;
+
+  // スコアバー生成
+  const maxPossible = 10; // 5問 × 2点
+  const barsWrap = document.getElementById('score-bars');
+  barsWrap.innerHTML = '';
+  TYPES.forEach(t => {
+    const pct = Math.round((scores[t.id] / maxPossible) * 100);
+    barsWrap.innerHTML += `
+      <div class="score-row">
+        <div class="score-row-label">
+          <span>${t.icon} ${t.name}</span>
+          <span>${scores[t.id]}点</span>
+        </div>
+        <div class="score-row-bar">
+          <div class="score-row-fill" style="width:0%" data-target="${pct}"></div>
+        </div>
+      </div>
+    `;
+  });
+
+  showScreen('screen-result');
+
+  // バーアニメーション
+  setTimeout(() => {
+    document.querySelectorAll('.score-row-fill').forEach(el => {
+      el.style.width = el.dataset.target + '%';
+    });
+  }, 200);
+
+  // データ送信
+  sendToSpreadsheet(winType, scores);
+}
+
+// ========== やり直し ==========
+function retryQuiz() {
+  showScreen('screen-top');
+}
+
+// ========== Googleスプレッドシートへ送信 ==========
+const GAS_URL = 'YOUR_GAS_URL_HERE'; // ← ここにGoogle Apps ScriptのURLを貼り付ける
+
+async function sendToSpreadsheet(winType, scores) {
+  if (GAS_URL === 'YOUR_GAS_URL_HERE') return; // 未設定時はスキップ
+
+  document.getElementById('overlay-sending').classList.add('active');
+
+  const payload = {
+    result: winType.name,
+    scores: {
+      visual: scores.visual,
+      auditory: scores.auditory,
+      rw: scores.rw,
+      kinesthetic: scores.kinesthetic,
+      logical: scores.logical,
+    },
+    userAgent: navigator.userAgent,
+    language: navigator.language,
+    timestamp: new Date().toISOString(),
+  };
+
+  try {
+    await fetch(GAS_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+  } catch (e) {
+    console.warn('送信エラー:', e);
+  } finally {
+    document.getElementById('overlay-sending').classList.remove('active');
+  }
+}
+</script>
+</body>
+</html>
