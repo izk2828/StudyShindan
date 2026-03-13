@@ -959,18 +959,20 @@ async function saveToSpreadsheet(winner, scores) {
   };
 
   try {
-    const res = await fetch(GAS_URL, {
+    // GASはCORSの制限があるため、no-corsモード＋フォーム形式で送信する
+    // ※ no-corsではレスポンスが読めないが、送信自体は成功する
+    const formData = new URLSearchParams();
+    formData.append('data', JSON.stringify(payload));
+
+    await fetch(GAS_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify(payload),
+      mode:   'no-cors',   // ← CORSエラーを回避するポイント
+      body:   formData,
     });
 
-    if (res.ok) {
-      statusEl.textContent = '✅ 結果が記録されました！ありがとうございます';
-      statusEl.className = 'save-status saved';
-    } else {
-      throw new Error('送信失敗');
-    }
+    // no-corsでは成功・失敗が判断できないため、送信完了とみなす
+    statusEl.textContent = '✅ 結果が記録されました！ありがとうございます';
+    statusEl.className = 'save-status saved';
   } catch (e) {
     statusEl.textContent = '⚠️ 記録に失敗しました（ネットワークを確認してください）';
     statusEl.className = 'save-status error';
