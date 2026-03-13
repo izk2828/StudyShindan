@@ -635,7 +635,7 @@ function retryQuiz() {
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbzXkCdzyCytu78uOk-VCKuHaxmZn2m6AErDF7r_b5EJy8zBwz_di-eRa54VfPfJw_s2/exec'; // ← ここにGoogle Apps ScriptのURLを貼り付ける
 
 async function sendToSpreadsheet(winType, scores) {
-  if (GAS_URL === 'YOUR_GAS_URL_HERE') return; // 未設定時はスキップ
+  if (!GAS_URL) return; // URLが空の場合のみスキップ // 未設定時はスキップ
 
   document.getElementById('overlay-sending').classList.add('active');
 
@@ -647,6 +647,10 @@ async function sendToSpreadsheet(winType, scores) {
       rw: scores.rw,
       kinesthetic: scores.kinesthetic,
       logical: scores.logical,
+    },
+    location: {
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || '不明',
+      // 国・都道府県・市区町村はGAS側でIPから取得
     },
     userAgent: navigator.userAgent,
     language: navigator.language,
